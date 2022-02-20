@@ -4,8 +4,8 @@
   flex-wrap: wrap;
 }
 
-.game-container > .game {
-  width: 100px;
+.game-container .game {
+  width: 150px;
   height: 200px;
   background-repeat: no-repeat;
   background-size: cover;

@@ -1,50 +1,40 @@
-import React, { useEffect } from 'react';
-import logo from './logo.svg';
+import React, { ReactElement, useContext, useEffect, useState } from 'react';
 import './App.css';
 import { HttpClient } from './core/services/HttpClient';
 
-function App() {
-  const httpClient = new HttpClient();
-  let games: any[] = [];
+const HttpModule = React.createContext(HttpClient.getInstance());
+
+function App(): ReactElement {
+  const [games, setGames] = useState([]);
+  const http = useContext(HttpModule);
 
   useEffect(() => {
-    httpClient.get('https://api.rawg.io/api/games?key=80c95efc92c642f1a869a9e0937be512').subscribe(
-      {
-        next: (res: any) => {
-          console.log(res.results);
-          games.push(res.results);
-        }
-      }
+    http.get('https://api.rawg.io/api/games?key=80c95efc92c642f1a869a9e0937be512').subscribe(
+      { next: (res: any) => setGames(res.results) }
     );
   }, [])
 
-  function loopGames(): any {
+  function loopGames(games: any[]): any {
+
     const loop = games.map(game => {
       const style = {
         backgroundImage: `url(${game.background_image})`
       }
-      return (<div className='game' style={style} />)
+      return (
+        <div key={game.id}>
+          <div className='game' style={style}>
+          </div>
+          <div className='game-info'>
+            {game.name}
+          </div>
+        </div>)
     });
     return <div className='game-container'>{loop}</div>;
   }
 
   return (
     <div className="App">
-      {loopGames()}
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {loopGames(games)}
     </div>
   );
 }
